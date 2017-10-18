@@ -288,6 +288,7 @@
 		<module>ocCommon</module>
 		<module>ocService</module>
 		<module>ocPortal</module>
+		<module>ocOperator</module>
 	</modules>
 	
 	<build>
