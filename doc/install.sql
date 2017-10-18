@@ -551,3 +551,64 @@ CREATE TABLE `t_user_message` (
 -- ----------------------------
 -- Records of t_user_message
 -- ----------------------------
+
+
+DROP TABLE IF EXISTS `t_share_record`;
+CREATE TABLE `t_share_record` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11),
+  `shareItemId` int(11) NOT NULL DEFAULT '0' COMMENT '第三方分享商品ID',
+  `title` varchar(20) NOT NULL DEFAULT '' COMMENT '分享记录标题',
+  `name` varchar(20) NOT NULL DEFAULT '' COMMENT '分享记录名称',
+  `share_channel_name` varchar(20) NOT NULL DEFAULT '' COMMENT '分享的渠道',
+  `share_channel` varchar(20) NOT NULL DEFAULT '' COMMENT '分享的渠道',
+
+  `share_category_name` varchar(20) NOT NULL DEFAULT '' COMMENT '栏目',
+  `share_category` varchar(20) NOT NULL DEFAULT '' COMMENT '栏目',
+
+  `share_order` varchar(20) NOT NULL DEFAULT '' COMMENT '位置',
+
+  `share_order_strategy_name` varchar(20) NOT NULL DEFAULT '' COMMENT '位置',
+  `share_order_strategy` int(10) NOT NULL DEFAULT '0' COMMENT '生成位置策略',
+  `share_count` int(11) NOT NULL DEFAULT '0' COMMENT '分享次数',
+
+  `create_time` datetime ,
+  `create_user` varchar(32) ,
+  `update_time`datetime,
+  `update_user` varchar(32),
+  `del` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+DROP TABLE IF EXISTS `t_share_channel`;
+CREATE TABLE `t_share_channel` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11),
+  `share_channel_name` varchar(20) NOT NULL DEFAULT '' COMMENT '渠道名称',
+  `channel` varchar(20) NOT NULL DEFAULT '' COMMENT '渠道',
+
+  `create_time` datetime ,
+  `create_user` varchar(32),
+  `update_time` datetime,
+  `update_user` varchar(32),
+  `del` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `t_share_category`;
+CREATE TABLE `t_share_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `channelId` int(11) NOT NULL ,
+  `category_name` varchar(20) NOT NULL DEFAULT '' COMMENT '渠道名称',
+  `category` varchar(20) NOT NULL DEFAULT '' COMMENT '渠道',
+
+  `create_time` datetime ,
+  `create_user` varchar(32),
+  `update_time` datetime ,
+  `update_user` varchar(32),
+  `del` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

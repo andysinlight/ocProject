@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://10.20.91.130/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.online.college.core.share.dao.ShareCategoryDao">
+
+    <resultMap id="BeanResultMap" type="com.online.college.core.share.domain.ShareCategory" >
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <id column="channelId" property="channelId" jdbcType="INTEGER"/>
+        <result column="category" property="category"  jdbcType="VARCHAR" />
+        <result column="category_name" property="categoryName"  jdbcType="VARCHAR" />
+        <result column="create_time" property="createTime"  jdbcType="DATE" />
+        <result column="create_user" property="createUser"  jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime"  jdbcType="TIMESTAMP" />
+        <result column="update_user" property="updateUser"  jdbcType="VARCHAR" />
+        <result column="del" property="del"  jdbcType="TINYINT" />
+    </resultMap>
+
+
+    <sql id="All_Columns">
+        channelId,category_name, category,create_time, create_user, update_time,update_user, del, id
+    </sql>
+
+
+    <insert id="create" parameterType="com.online.college.core.share.domain.ShareCategory" flushCache="true"  useGeneratedKeys="true" keyProperty="id"  >
+        INSERT INTO t_share_category
+        ( channelId,category_name, category, create_time, create_user, update_time,
+        update_user, del, id )
+        VALUES
+        ( #{channelId, jdbcType=VARCHAR},#{categoryName, jdbcType=VARCHAR}, #{category, jdbcType=VARCHAR}, #{createTime, jdbcType=DATE}, #{createUser, jdbcType=VARCHAR}, #{updateTime, jdbcType=TIMESTAMP},
+        #{updateUser, jdbcType=VARCHAR}, #{del, jdbcType=TINYINT}, #{id, jdbcType=VARCHAR} )
+    </insert>
+
+
+    <select id="getTotalItemsCount" parameterType="com.online.college.core.share.domain.ShareChannel" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_share_category
+        <trim prefix="WHERE " prefixOverrides="AND |OR ">
+            <if test="id != null">
+                AND channelId = #{id, jdbcType=INTEGER}
+            </if>
+        </trim>
+    </select>
+
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.online.college.core.share.domain.ShareCategory">
+        SELECT
+        <include refid="All_Columns"  />
+        FROM t_share_category
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+    <select id="queryPage"  parameterType="com.online.college.core.share.domain.ShareChannel"  resultMap="BeanResultMap">
+        SELECT
+        <include refid="All_Columns" />
+        FROM t_share_category
+        <trim prefix="WHERE " prefixOverrides="AND |OR ">
+            <if test="param1.id != null">
+                AND channelId = #{param1.id, jdbcType=INTEGER}
+            </if>
+        </trim>
+
+        <if test="param2.sortField != null and param2.sortField != ''">
+            ORDER BY ${param2.sortField}  ${param2.sortDirection}
+        </if>
+        LIMIT #{param2.startIndex, jdbcType=INTEGER} , #{param2.pageSize, jdbcType=INTEGER}
+    </select>
+
+
+    <delete id="delete" parameterType="com.online.college.core.share.domain.ShareCategory" >
+        DELETE
+        FROM t_share_category
+        WHERE id = #{id, jdbcType=INTEGER}
+    </delete>
+
+    <update id="update" parameterType="com.online.college.core.course.domain.Course" flushCache="true">
+        UPDATE t_share_category SET
+        channelId = #{channelId, jdbcType=VARCHAR},
+        category_name = #{categoryName, jdbcType=VARCHAR},
+        category = #{category, jdbcType=VARCHAR},
+        update_time = #{updateTime, jdbcType=TIMESTAMP},
+        update_user = #{updateUser, jdbcType=VARCHAR}
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
+
+
+</mapper>

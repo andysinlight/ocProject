@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://10.20.91.130/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.online.college.core.share.dao.ShareRecordDao">
+
+    <resultMap id="BeanResultMap" type="com.online.college.core.share.domain.ShareRecord">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="uid" property="uId" jdbcType="INTEGER"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="share_channel_name" property="shareChannelName" jdbcType="VARCHAR"/>
+        <result column="share_channel" property="shareChannel" jdbcType="VARCHAR"/>
+        <result column="share_category_name" property="shareCategoryName" jdbcType="VARCHAR"/>
+        <result column="share_category" property="shareCategory" jdbcType="VARCHAR"/>
+        <result column="share_order" property="shareOrder" jdbcType="VARCHAR"/>
+        <result column="share_order_strategy_name" property="shareOrderStrategyName" jdbcType="VARCHAR"/>
+        <result column="share_order_strategy" property="shareOrderStrategy" jdbcType="INTEGER"/>
+        <result column="share_count" property="shareCount" jdbcType="INTEGER"/>
+
+        <result column="create_time" property="createTime" jdbcType="DATE"/>
+        <result column="create_user" property="createUser" jdbcType="VARCHAR"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="update_user" property="updateUser" jdbcType="VARCHAR"/>
+        <result column="del" property="del" jdbcType="TINYINT"/>
+    </resultMap>
+
+
+    <sql id="All_Columns">
+        uid,
+        title,
+        name,
+        share_channel_name,
+        share_channel,
+        share_category_name,
+        share_category,
+        share_order,
+        share_order_strategy_name,
+        share_order_strategy,
+        share_count,
+
+        create_time,
+        create_user,
+        update_time,
+        update_user,
+        del,
+        id
+    </sql>
+
+
+    <insert id="create" parameterType="com.online.college.core.share.domain.ShareRecord" flushCache="true"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_share_record
+        (uid,
+        title,
+        name,
+        share_channel_name,
+        share_channel,
+        share_category_name,
+        share_category,
+        share_order,
+        share_order_strategy_name,
+        share_order_strategy,
+        share_count,
+
+        create_time,
+        create_user,
+        update_time,
+        update_user,
+        del)
+
+        VALUES
+        (#{uId, jdbcType=VARCHAR},
+        #{ title,jdbcType=VARCHAR},
+        #{ name,jdbcType=VARCHAR},
+        #{ shareChannelName,jdbcType=VARCHAR},
+        #{ shareChannel,jdbcType=VARCHAR},
+        #{ shareCategoryName,jdbcType=VARCHAR},
+        #{ shareCategory,jdbcType=VARCHAR},
+        #{ shareOrder,jdbcType=VARCHAR},
+        #{ shareOrderStrategyName,jdbcType=VARCHAR},
+        #{ shareOrderStrategy,jdbcType=VARCHAR},
+        #{ shareCount,jdbcType=VARCHAR},
+
+        #{createTime, jdbcType=DATE},
+        #{createUser, jdbcType=VARCHAR},
+        #{updateTime, jdbcType=TIMESTAMP},
+        #{updateUser, jdbcType=VARCHAR},
+        #{del, jdbcType=TINYINT})
+    </insert>
+
+
+    <select id="getTotalItemsCount" parameterType="com.online.college.core.auth.domain.AuthUser"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM t_share_record
+        <trim prefix="WHERE " prefixOverrides="AND |OR ">
+            <if test="id != null">
+                AND uid = #{id, jdbcType=INTEGER}
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryPage" parameterType="com.online.college.core.auth.domain.AuthUser" resultMap="BeanResultMap">
+        SELECT
+        <include refid="All_Columns"/>
+        FROM t_share_record
+        <trim prefix="WHERE " prefixOverrides="AND |OR ">
+            <if test="param1.id != null">
+                AND uid = #{param1.id, jdbcType=INTEGER}
+            </if>
+        </trim>
+
+        <if test="param2.sortField != null and param2.sortField != ''">
+            ORDER BY ${param2.sortField} ${param2.sortDirection}
+        </if>
+        LIMIT #{param2.startIndex, jdbcType=INTEGER} , #{param2.pageSize, jdbcType=INTEGER}
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultType="com.online.college.core.share.domain.ShareRecord">
+        SELECT
+        <include refid="All_Columns"/>
+        FROM t_share_record
+        WHERE id = #{id, jdbcType=INTEGER}
+    </select>
+
+
+    <delete id="delete" parameterType="com.online.college.core.share.domain.ShareRecord">
+        DELETE
+        FROM t_share_record
+        WHERE id = #{id, jdbcType=INTEGER}
+    </delete>
+
+    <update id="update" parameterType="com.online.college.core.course.domain.Course" flushCache="true">
+        UPDATE t_share_record SET
+        uid = #{uId, jdbcType=VARCHAR},
+
+        title = #{ title,jdbcType=VARCHAR},
+        name = #{ name,jdbcType=VARCHAR},
+        share_channel_name = #{ shareChannelName,jdbcType=VARCHAR},
+        share_channel = #{ shareChannel,jdbcType=VARCHAR},
+        share_category_name = #{ shareCategoryName,jdbcType=VARCHAR},
+        share_category = #{ shareCategory,jdbcType=VARCHAR},
+        share_order = #{ shareOrder,jdbcType=VARCHAR},
+        share_order_strategy_name = #{ shareOrderStrategyName,jdbcType=VARCHAR},
+        share_order_strategy = #{ shareOrderStrategy,jdbcType=VARCHAR},
+        share_count = #{ shareCount,jdbcType=VARCHAR},
+
+        update_time = #{updateTime, jdbcType=TIMESTAMP},
+        update_user = #{updateUser, jdbcType=VARCHAR}
+        WHERE id = #{id, jdbcType=INTEGER}
+    </update>
+
+
+</mapper>

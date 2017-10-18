@@ -24,7 +24,8 @@ public class TailPage<E> extends AbstractPage<E> {
     }
 
     public TailPage(int pageNum, int pageSize , int itemsTotalCount , Collection<E> items) {
-    	this.setItemsTotalCount(itemsTotalCount);
+		this.setPageSize(pageSize);
+		this.setItemsTotalCount(itemsTotalCount);
         this.setPageNum(pageNum);
         this.setPageSize(pageSize);
         this.setItems(items);
