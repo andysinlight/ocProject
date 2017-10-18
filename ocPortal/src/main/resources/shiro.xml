@@ -49,6 +49,7 @@
 		</property>
 		<property name="filterChainDefinitions">
 			<value>
+				/share/** = anon
 				/error/** = anon
 				/res/** = anon
 				/tools/** = anon
