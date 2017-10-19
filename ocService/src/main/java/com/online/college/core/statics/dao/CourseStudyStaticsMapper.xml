@@ -8,12 +8,6 @@
 		SELECT count(id) totalCount , date_format(create_time,'%Y-%m-%d') as dateStr  
 		FROM t_user_course_section
 		WHERE course_id = #{courseId}
-		<![CDATA[ 
-			AND CREATE_TIME >= #{startDate} 
-			AND CREATE_TIME <= #{endDate} 
-		]]>
-		GROUP BY date_format(create_time,'%Y-%m-%d')
-		ORDER BY create_time
 	</select>
 
 	

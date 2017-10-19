@@ -1,17 +1,18 @@
 package com.online.college.opt.controller;
 
 import com.online.college.common.page.TailPage;
-import com.online.college.common.storage.QiniuStorage;
+import com.online.college.common.util.CalendarUtil;
+import com.online.college.common.util.JsonUtil;
 import com.online.college.common.web.JsonView;
 import com.online.college.common.web.SessionContext;
 import com.online.college.core.auth.domain.AuthUser;
 import com.online.college.core.consts.domain.ConstsClassify;
-import com.online.college.core.consts.domain.ConstsSiteCarousel;
-import com.online.college.core.consts.service.IConstsSiteCarouselService;
 import com.online.college.core.course.domain.Course;
 import com.online.college.core.course.service.ICourseService;
 import com.online.college.core.share.domain.ShareRecord;
 import com.online.college.core.share.service.IShareRecordService;
+import com.online.college.core.statics.domain.CourseStudyStaticsDto;
+import com.online.college.core.statics.domain.StaticsVO;
 import com.online.college.opt.business.IPortalBusiness;
 import com.online.college.opt.vo.ConstsClassifyVO;
 import com.online.college.opt.vo.CourseSectionVO;
@@ -20,20 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/share")
 public class ShareController {
+
+    @Resource
+    private ICourseService courseService;
+
 
     @Resource
     private ICourseService productService;
@@ -44,6 +45,95 @@ public class ShareController {
 
     @Autowired
     private IPortalBusiness portalBusiness;
+
+
+    /**
+     * 课程管理
+     */
+    @RequestMapping("/pagelist")
+    public ModelAndView list(Course queryEntity, TailPage<Course> page) {
+        ModelAndView mv = new ModelAndView("cms/share/record");
+
+        if (StringUtils.isNotEmpty(queryEntity.getName())) {
+            queryEntity.setName(queryEntity.getName().trim());
+        } else {
+            queryEntity.setName(null);
+        }
+        page.setPageSize(6);
+        page = courseService.queryPage(queryEntity, page);
+        mv.addObject("page", page);
+        mv.addObject("queryEntity", queryEntity);
+        mv.addObject("curNav", "record");
+        return mv;
+    }
+
+
+    /**
+     * 课程详情
+     */
+    @RequestMapping("/read")
+    public ModelAndView courseRead(Long id) {
+        Course course = courseService.getById(id);
+        if (null == course) {
+            return new ModelAndView("error/404");
+        }
+
+        ModelAndView mv = new ModelAndView("cms/share/read");
+        mv.addObject("curNav", "record");
+        mv.addObject("course", course);
+
+
+        Map<String, ConstsClassifyVO> classifyMap = portalBusiness.queryAllClassifyMap();
+        //所有一级分类
+        List<ConstsClassifyVO> classifysList = new ArrayList<ConstsClassifyVO>();
+        for (ConstsClassifyVO vo : classifyMap.values()) {
+            classifysList.add(vo);
+        }
+        mv.addObject("classifys", classifysList);
+
+        List<ConstsClassify> subClassifys = new ArrayList<ConstsClassify>();
+        for (ConstsClassifyVO vo : classifyMap.values()) {
+            subClassifys.addAll(vo.getSubClassifyList());
+        }
+        mv.addObject("subClassifys", subClassifys);//所有二级分类
+
+/*
+        //课程章节
+        List<CourseSectionVO> chaptSections = this.portalBusiness.queryCourseSection(id);
+        mv.addObject("chaptSections", chaptSections);
+
+        //课程分类
+        Map<String,ConstsClassifyVO> classifyMap = portalBusiness.queryAllClassifyMap();
+        //所有一级分类
+        List<ConstsClassifyVO> classifysList = new ArrayList<ConstsClassifyVO>();
+        for(ConstsClassifyVO vo : classifyMap.values()){
+            classifysList.add(vo);
+        }
+        mv.addObject("classifys", classifysList);
+
+        List<ConstsClassify> subClassifys = new ArrayList<ConstsClassify>();
+        for(ConstsClassifyVO vo : classifyMap.values()){
+            subClassifys.addAll(vo.getSubClassifyList());
+        }
+        mv.addObject("subClassifys", subClassifys);//所有二级分类
+
+        //获取报表统计信息
+        CourseStudyStaticsDto staticsDto = new CourseStudyStaticsDto();
+        staticsDto.setCourseId(course.getId());
+        staticsDto.setEndDate(new Date());
+        staticsDto.setStartDate(CalendarUtil.getPreNDay(new Date(), 7));
+
+        StaticsVO staticsVo = staticsService.queryCourseStudyStatistics(staticsDto);
+        if(null != staticsVo){
+            try {
+                mv.addObject("staticsVo", JsonUtil.toJson(staticsVo));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }*/
+        return mv;
+    }
+
 
     @RequestMapping("/record")
     public ModelAndView getRecodes(TailPage<ShareRecord> page) {
@@ -143,5 +233,16 @@ public class ShareController {
         return new JsonView().toString();
     }
 
+
+    @RequestMapping(value = "/readRecord")
+    @ResponseBody
+    public String readRecord(Long id) {
+        Course course = courseService.getById(id);
+        List<ShareRecord> shareRecords = shareRecordService.queryAll(id);
+        Map<String, Object> map = new HashMap<>();
+        map.put("course", course);
+        map.put("record", shareRecords);
+        return JsonView.render(map);
+    }
 
 }

@@ -15,6 +15,9 @@ public interface IShareRecordService {
 
     Integer getTotalItemsCount(AuthUser authUser);
 
+    List<ShareRecord> queryAll(Long id);
+
+
     TailPage<ShareRecord> queryPage(AuthUser authUser, TailPage<ShareRecord> page);
 
     void delete(ShareRecord record);

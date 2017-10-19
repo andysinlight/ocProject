@@ -3,10 +3,8 @@ package com.online.college.core.share.service.impl;
 import com.online.college.common.page.TailPage;
 import com.online.college.core.auth.domain.AuthUser;
 import com.online.college.core.share.dao.ShareRecordDao;
-import com.online.college.core.share.domain.ShareChannel;
 import com.online.college.core.share.domain.ShareRecord;
 import com.online.college.core.share.service.IShareRecordService;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +28,11 @@ public class ShareRecordServiceImpl implements IShareRecordService {
     @Override
     public Integer getTotalItemsCount(AuthUser authUser) {
         return dao.getTotalItemsCount(authUser);
+    }
+
+    @Override
+    public List<ShareRecord> queryAll(Long id) {
+        return dao.queryAll(id);
     }
 
     @Override

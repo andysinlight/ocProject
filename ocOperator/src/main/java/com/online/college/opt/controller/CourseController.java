@@ -142,7 +142,7 @@ public class CourseController {
 		}
 		mv.addObject("subClassifys", subClassifys);//所有二级分类
 		
-		//获取报表统计信息
+		/*//获取报表统计信息
 		CourseStudyStaticsDto staticsDto = new CourseStudyStaticsDto();
 		staticsDto.setCourseId(course.getId());
 		staticsDto.setEndDate(new Date());
@@ -155,7 +155,7 @@ public class CourseController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		return mv;
 	}
 	
