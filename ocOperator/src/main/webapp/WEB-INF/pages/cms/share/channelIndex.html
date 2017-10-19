@@ -37,7 +37,7 @@
 							<tbody>
 								<#if classifys??>
 								<#list classifys as item>
-								<tr class="tr-bg-gray" code="${item.code!}">
+								<tr class="tr-bg-gray" code="${item.id!}">
 									<td>${item.name!}</td>
 									<td>${item.code!}</td>
 									<td>
@@ -107,7 +107,7 @@
 									<option value="0">总分类</option>
 									<#if classifys??>
 									<#list classifys as item>
-									<option value="${item.code!}">${item.name!}</option>
+									<option value="${item.id!}">${item.name!}</option>
 									</#list>
 									</#if>
 								</select>
@@ -125,7 +125,7 @@
 						<div id="_ocAlertTip" class="alert alert-success f-16" style="display: none;"></div>
 						<!-- tip提示-end -->
 					</div>
-					
+
 					<div class="modal-footer">
 						<button type="button" class="btn btn-primary" onclick="doSave();">保存</button>
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -181,7 +181,7 @@
 				Modal.show('myModal');
 				$('#code').removeAttr('disabled');
 			}else{
-				$('#code').attr('disabled','disabled');
+//				$('#code').attr('disabled','disabled');
 				$.ajax({
 					url:'${s.base}/classify/getById.html',
 				    type:'POST',

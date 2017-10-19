@@ -60,7 +60,7 @@ public class PortalBusinessImpl implements IPortalBusiness {
 			if("0".equals(c.getParentCode())){//一级分类
 				ConstsClassifyVO vo = new ConstsClassifyVO();
 				BeanUtils.copyProperties(c, vo);
-				resultMap.put(vo.getCode(), vo);
+				resultMap.put(vo.getId()+"", vo);
 			}else{//二级分类
 				if(null != resultMap.get(c.getParentCode())){
 					resultMap.get(c.getParentCode()).getSubClassifyList().add(c);//添加到子分类中
