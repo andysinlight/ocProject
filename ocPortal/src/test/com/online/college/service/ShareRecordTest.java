@@ -48,8 +48,6 @@ public class ShareRecordTest extends TestCase {
         AuthUser user = new AuthUser();
         user.setId(123l);
         TailPage<ShareRecord> page = new TailPage<>(1, 2, shareRecordDao.getTotalItemsCount(user), new ArrayList<ShareRecord>());
-        List<ShareChannel> shareChannels = shareRecordDao.queryPage(user, page);
-        shareChannels.size();
     }
 
 
