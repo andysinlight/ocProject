@@ -32,7 +32,7 @@
                     <div class="form-group clearfix">
                         <label class="control-label">商品ID</label>
                         <div class="col-sm-4">
-                            <input type="text" name="weight" class="form-control"/>
+                            <input type="text" name="classify" class="form-control"/>
                         </div>
                     </div>
 
@@ -271,8 +271,7 @@
             success: function (resp) {
                 var errcode = resp.errcode;
                 if (errcode == 0) {
-                    //保存成功，跳转到详情页
-                    window.location.href = '${s.base}/share/add.html?id=' + courseId;
+                    window.location.href = '${s.base}/share/pagelist.html';
                 }
             }
         });

@@ -53,27 +53,33 @@ public class ShareController {
     private IPortalBusiness portalBusiness;
 
 
-    @RequestMapping("/item/{itemId}")
+    @RequestMapping("/product/{itemId}")
     public ModelAndView learn(@PathVariable Long itemId) {
         if (null == itemId)
             return new ModelAndView("error/404");
 //        Course course = courseService.getById(courseId);
         Course course = courseService.getById(itemId);
+
+        course.setStudyCount(course.getStudyCount()+1);
+        courseService.updateSelectivity(course);
+
         List<ShareRecord> shareRecords = shareRecordService.queryAll(itemId);
         String spm = "";
         if (shareRecords.size() > 0) {
-            ShareRecord record = shareRecords.get(new Random(shareRecords.size()).nextInt());
-            spm = record.getShareChannel() + record.getShareCategory();
+            int i = new Random().nextInt(1000);
+            int index = i % shareRecords.size();
+            ShareRecord record = shareRecords.get(index);
+            spm = record.getShareChannel() + "." + record.getShareCategory();
             if (isEmpty(record.getShareOrder())) {
                 Integer integer = new Random(10000).nextInt();
                 byte[] bytes = new byte[integer.byteValue()];
-                spm += HexUtil.encodeHex(bytes, true);
+                spm += "." + HexUtil.encodeHex(bytes, true);
             } else {
-                spm += record.getShareOrder();
+                spm += "." + record.getShareOrder();
             }
         }
         ModelAndView mv = new ModelAndView("/cms/share/go");
-        mv.addObject("itemInfo", "https://item.taobao.com/item.htm?spm=" + spm + "&id=" + course.getWeight());
+        mv.addObject("itemInfo", "https://item.taobao.com/item.htm?spm=" + spm + "&id=" + course.getClassify());
         return mv;
     }
 

@@ -117,7 +117,7 @@
             <label class="control-label">位置</label>
             <div class="col-sm-4">
                 <form>
-                    <input type="text" class="form-control" id="subSectionName" name ="shareOrder"placeholder="请输入"
+                    <input type="text" class="form-control" id="subSectionName" name="shareOrder" placeholder="请输入"
                            style="margin-bottom:5px;">
                 </form>
             </div>
@@ -221,7 +221,7 @@
                 var errcode = resp.errcode;
                 if (errcode == 0) {
                     //保存成功，跳转到详情页
-                    window.location.href = '${s.base}/share/add.html?id=' + courseId;
+                    window.location.href = '${s.base}/share/pagelist.html';
                 }
             }
         });
