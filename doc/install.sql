@@ -233,7 +233,7 @@ CREATE TABLE `t_course` (
   `picture` varchar(255) NOT NULL DEFAULT '',
   `brief` text COMMENT '课程描述',
   `recommend` tinyint(1) NOT NULL DEFAULT '0' COMMENT '未推荐（0）、推荐（1）',
-  `weight` int(11) NOT NULL DEFAULT '0' COMMENT '权重',
+  `weight` int(20) NOT NULL DEFAULT '0' COMMENT '权重',
   `study_count` int(11) NOT NULL DEFAULT '0' COMMENT '学习人数',
    `create_time` datetime,
   `create_user` varchar(32) NOT NULL DEFAULT 'system',

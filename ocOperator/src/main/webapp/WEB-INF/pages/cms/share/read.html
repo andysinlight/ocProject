@@ -90,12 +90,13 @@
 <div id="demoSection4Clone">
     <div id="demoCourseSectionDiv" sid="demoCourseSectionDiv"
          style="padding:20px;border:1px solid #CCC; margin-bottom:20px;display:none;">
+        <input type="hidden" id="recordId"/>
         <div class="form-group clearfix">
             <label class="control-label">渠道选择</label>
             <div class="col-sm-4">
-                <select id="classify" name="classify" class="form-control" type="select">
+                <select id="classify" name="classify" class="form-control">
                     <#list classifys as item>
-                        <option value="${item.id!}">${item.name}</option>
+                        <option value="${item.id!}" name="${item.name!}">${item.name}</option>
                     </#list>
                 </select>
             </div>
@@ -107,9 +108,11 @@
         <div id="demoSectionDiv" sid="demoSectionDiv" class="form-group clearfix">
             <label class="control-label">栏目</label>
             <div class="col-sm-4">
-                <select id="subClassify" name="subClassify" class="form-control" type="select">
+                <select id="subClassify" name="subClassify" class="form-control">
                     <#list subClassifys as item>
-                        <option parentCode="${item.parentCode!}" value="${item.code!}">${item.name}</option>
+                        <option parentCode="${item.parentCode!} " value="${item.id!}" name="${item.name!}">
+                            ${item.name}
+                        </option>
                     </#list>
                 </select>
             </div>
@@ -117,8 +120,10 @@
         <div class="form-group clearfix">
             <label class="control-label">位置</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" name="subSectionName" placeholder="请输入"
-                       style="margin-bottom:5px;">
+                <form id="subSectionNameForm">
+                    <input type="text" class="form-control" id="subSectionName" name="shareOrder" placeholder="请输入"
+                           style="margin-bottom:5px;">
+                </form>
             </div>
         </div>
 
@@ -143,21 +148,19 @@
                     for (var i = 0; i < data.record.length; i++) {
                         addCourseSection();
                     }
-                    var index=0;
+
+                    var index = 0;
                     var sectionDivs = $('#myTabContent').find("div[sid='demoCourseSectionDiv']");
                     $.each(sectionDivs, function (i, item) {
                         var record = data.record[index];
-                        var channel = record.shareChannel;
-                        var shareCategory = record.shareCategory;
-                        $(item).find("#classify").find("option[value='"+channel+"']").attr("selected", true);
-
-
-                        $(item).find("#subClassify").find("option[value=shareCategory]").attr("selected",true);
+                        var channel = record.shareChannelName;
+                        var shareCategory = record.shareCategoryName;
+                        $(item).find("#classify").find("option[name='" + channel + "']").attr("selected", true);
+                        $(item).find("#subClassify").find("option[name='" + shareCategory + "']").attr("selected", true);
+                        $(item).find("#recordId").attr("name", record.id);
+                        $(item).find("#subSectionNameForm").fill(record);
                         index++;
                     });
-
-
-                    $('#myTabContent').fill(data.record);
                 }
             }
         });
@@ -195,23 +198,35 @@
 
     //删除章
     function deleteCourseSection(el) {
-        $(el).parent().parent().parent().remove();
+        var parent = $(el).parent().parent().parent();
+        var attr = parent.find('#recordId').attr('name');
+        if (attr && $.trim(attr) != '') {
+            $.ajax({
+                url: '${s.base}/share/deleteRecord.html?id=' + attr,
+                success: function (resp) {
+                    parent.remove();
+                }
+            });
+
+        } else {
+            parent.remove();
+        }
     }
 
 
     /*private long uId;
-    private long shareItemId;
-    private String title;
-    private String name;
-    private String shareChannelName;
-    private String shareChannel;
-    private String shareCategoryName;
-    private String shareCategory;
-    private String shareOrder;
-    private String shareOrderStrategyName;
-    private int shareOrderStrategy;
-    private long shareCount;
-*/
+     private long shareItemId;
+     private String title;
+     private String name;
+     private String shareChannelName;
+     private String shareChannel;
+     private String shareCategoryName;
+     private String shareCategory;
+     private String shareOrder;
+     private String shareOrderStrategyName;
+     private int shareOrderStrategy;
+     private long shareCount;
+     */
 
     //保存章节信息
     function saveCourseSection() {
@@ -229,11 +244,15 @@
 
             var sectionName = $(item).find("#classify option:selected").val();
             var categoryName = $(item).find("#subClassify option:selected").val();
+            var recordId = $(item).find('#recordId').attr('name');
+            var order = $(item).find("#subSectionName").val();
             if (sectionName && $.trim(sectionName) != '') {
                 var obj = {};
+                obj.id = recordId;
                 obj.shareItemId = courseId;
                 obj.shareChannel = $.trim(sectionName);
                 obj.shareCategory = $.trim(categoryName);
+                obj.shareOrder = $.trim(order);
                 batchSections.push(obj);
             }
         });

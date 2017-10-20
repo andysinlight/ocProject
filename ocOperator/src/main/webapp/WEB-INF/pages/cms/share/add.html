@@ -32,7 +32,7 @@
                     <div class="form-group clearfix">
                         <label class="control-label">商品ID</label>
                         <div class="col-sm-4">
-                            <input type="text" name="weight" class="form-control"/>
+                            <input type="text" name="classify" class="form-control"/>
                         </div>
                     </div>
 
@@ -92,7 +92,7 @@
         <div class="form-group clearfix">
             <label class="control-label">渠道选择</label>
             <div class="col-sm-4">
-                <select id="classify" name="classify"  class="form-control" type="select">
+                <select id="classify" name="classify" class="form-control" type="select">
                     <#list classifys as item>
                         <option value="${item.id!}">${item.name}</option>
                     </#list>
@@ -108,7 +108,7 @@
             <div class="col-sm-4">
                 <select id="subClassify" name="subClassify" class="form-control" type="select">
                     <#list subClassifys as item>
-                        <option parentCode="${item.parentCode!}" value="${item.code!}">${item.name}</option>
+                        <option parentCode="${item.parentCode!}" value="${item.id!}">${item.name}</option>
                     </#list>
                 </select>
             </div>
@@ -116,7 +116,10 @@
         <div class="form-group clearfix">
             <label class="control-label">位置</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" name="subSectionName" placeholder="请输入" style="margin-bottom:5px;">
+                <form>
+                    <input type="text" class="form-control" id="subSectionName" name ="shareOrder"placeholder="请输入"
+                           style="margin-bottom:5px;">
+                </form>
             </div>
         </div>
 
@@ -163,18 +166,18 @@
 
 
     /*private long uId;
-    private long shareItemId;
-    private String title;
-    private String name;
-    private String shareChannelName;
-    private String shareChannel;
-    private String shareCategoryName;
-    private String shareCategory;
-    private String shareOrder;
-    private String shareOrderStrategyName;
-    private int shareOrderStrategy;
-    private long shareCount;
-*/
+     private long shareItemId;
+     private String title;
+     private String name;
+     private String shareChannelName;
+     private String shareChannel;
+     private String shareCategoryName;
+     private String shareCategory;
+     private String shareOrder;
+     private String shareOrderStrategyName;
+     private int shareOrderStrategy;
+     private long shareCount;
+     */
 
     //保存章节信息
     function saveCourseSection() {
@@ -192,11 +195,13 @@
 
             var sectionName = $(item).find("#classify option:selected").val();
             var categoryName = $(item).find("#subClassify option:selected").val();
+            var order = $(item).find("#subSectionName").val();
             if (sectionName && $.trim(sectionName) != '') {
                 var obj = {};
                 obj.shareItemId = courseId;
                 obj.shareChannel = $.trim(sectionName);
                 obj.shareCategory = $.trim(categoryName);
+                obj.shareOrder = $.trim(order);
                 batchSections.push(obj);
             }
         });

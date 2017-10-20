@@ -65,12 +65,24 @@
 									</p>
 							</td>
 
-					<td style="width:120px;">
-						<p>访问次数：${item.shareCount!}</p>
-						<p><a href="javascript:void(0)" onclick="update(${item.id!},1);">修改</a></p>
-						<p><a href="javascript:void(0)" onclick="doDelete(${item.id!});">删除</a></p>
+					<td>
+						<#if (records)??>
+							<#list records as record>
+								<#if (record.shareItemId==item.id)>
+									<p>${record.shareChannelName!}+${record.shareCategoryName!}+${record.shareOrder!}</p>
+								</#if>
+							</#list>
+						</#if>
 					</td>
 
+
+
+					<td style="width:120px;">
+						<p>访问次数：${item.shareCount!}</p>
+						<p><a href="${s.base}/share/read.html?id=${item.id!}">修改</a></p>
+						<p><a href="${s.base}/share/item/${item.id!}.html">去看看</a></p>
+						<p><a href="javascript:void(0)" onclick="doDelete(${item.id!});">删除</a></p>
+					</td>
 
 
 

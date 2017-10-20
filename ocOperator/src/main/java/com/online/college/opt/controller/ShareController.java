@@ -7,6 +7,7 @@ import com.online.college.common.web.JsonView;
 import com.online.college.common.web.SessionContext;
 import com.online.college.core.auth.domain.AuthUser;
 import com.online.college.core.consts.domain.ConstsClassify;
+import com.online.college.core.consts.service.IConstsClassifyService;
 import com.online.college.core.course.domain.Course;
 import com.online.college.core.course.service.ICourseService;
 import com.online.college.core.share.domain.ShareRecord;
@@ -16,15 +17,18 @@ import com.online.college.core.statics.domain.StaticsVO;
 import com.online.college.opt.business.IPortalBusiness;
 import com.online.college.opt.vo.ConstsClassifyVO;
 import com.online.college.opt.vo.CourseSectionVO;
+import com.utils.HexUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
+import javax.swing.plaf.TextUI;
 import java.io.IOException;
 import java.util.*;
 
@@ -38,6 +42,8 @@ public class ShareController {
 
     @Resource
     private ICourseService productService;
+    @Resource
+    private IConstsClassifyService classifyService;
 
 
     @Autowired
@@ -45,6 +51,35 @@ public class ShareController {
 
     @Autowired
     private IPortalBusiness portalBusiness;
+
+
+    @RequestMapping("/item/{itemId}")
+    public ModelAndView learn(@PathVariable Long itemId) {
+        if (null == itemId)
+            return new ModelAndView("error/404");
+//        Course course = courseService.getById(courseId);
+        Course course = courseService.getById(itemId);
+        List<ShareRecord> shareRecords = shareRecordService.queryAll(itemId);
+        String spm = "";
+        if (shareRecords.size() > 0) {
+            ShareRecord record = shareRecords.get(new Random(shareRecords.size()).nextInt());
+            spm = record.getShareChannel() + record.getShareCategory();
+            if (isEmpty(record.getShareOrder())) {
+                Integer integer = new Random(10000).nextInt();
+                byte[] bytes = new byte[integer.byteValue()];
+                spm += HexUtil.encodeHex(bytes, true);
+            } else {
+                spm += record.getShareOrder();
+            }
+        }
+        ModelAndView mv = new ModelAndView("/cms/share/go");
+        mv.addObject("itemInfo", "https://item.taobao.com/item.htm?spm=" + spm + "&id=" + course.getWeight());
+        return mv;
+    }
+
+    private boolean isEmpty(String str) {
+        return !(null != str && !"".equals(str));
+    }
 
 
     /**
@@ -64,6 +99,13 @@ public class ShareController {
         mv.addObject("page", page);
         mv.addObject("queryEntity", queryEntity);
         mv.addObject("curNav", "record");
+
+        ArrayList list = new ArrayList();
+        for (Course course :
+                page.getItems()) {
+            list.addAll(shareRecordService.queryAll(course.getId()));
+        }
+        mv.addObject("records", list);
         return mv;
     }
 
@@ -74,6 +116,8 @@ public class ShareController {
     @RequestMapping("/read")
     public ModelAndView courseRead(Long id) {
         Course course = courseService.getById(id);
+        List<ShareRecord> shareRecords = shareRecordService.queryAll(id);
+
         if (null == course) {
             return new ModelAndView("error/404");
         }
@@ -81,7 +125,7 @@ public class ShareController {
         ModelAndView mv = new ModelAndView("cms/share/read");
         mv.addObject("curNav", "record");
         mv.addObject("course", course);
-
+        mv.addObject("records", shareRecords);
 
         Map<String, ConstsClassifyVO> classifyMap = portalBusiness.queryAllClassifyMap();
         //所有一级分类
@@ -156,8 +200,8 @@ public class ShareController {
 
     @RequestMapping("record/doDelete")
     @ResponseBody
-    public String doDelete(ShareRecord entity) {
-        shareRecordService.delete(entity);
+    public String doDelete(Course entity) {
+        courseService.delete(entity);
         return new JsonView().toString();
     }
 
@@ -224,11 +268,23 @@ public class ShareController {
     @RequestMapping(value = "/batchAdd")
     @ResponseBody
     public String batchAdd(@RequestBody List<ShareRecord> batchSections) {
-        for (ShareRecord rcord :
+        for (ShareRecord record :
                 batchSections) {
-            rcord.setuId(SessionContext.getUserId());
+            record.setuId(SessionContext.getUserId());
 
-            shareRecordService.create(rcord);
+            ConstsClassify channel = classifyService.getById(Long.valueOf(record.getShareChannel()));
+            ConstsClassify category = classifyService.getById(Long.valueOf(record.getShareCategory()));
+
+            record.setShareChannel(channel.getCode());
+            record.setShareChannelName(channel.getName());
+            record.setShareCategory(category.getCode());
+            record.setShareCategoryName(category.getName());
+
+            if (record.getId() != null && record.getId() > 0) {
+                shareRecordService.update(record);
+            } else {
+                shareRecordService.create(record);
+            }
         }
         return new JsonView().toString();
     }
@@ -243,6 +299,15 @@ public class ShareController {
         map.put("course", course);
         map.put("record", shareRecords);
         return JsonView.render(map);
+    }
+
+    @RequestMapping(value = "/deleteRecord")
+    @ResponseBody
+    public String deleteRecord(Long id) {
+        ShareRecord record = new ShareRecord();
+        record.setId(id);
+        shareRecordService.delete(record);
+        return new JsonView().toString();
     }
 
 }
