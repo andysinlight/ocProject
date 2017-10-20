@@ -143,6 +143,20 @@
                     for (var i = 0; i < data.record.length; i++) {
                         addCourseSection();
                     }
+                    var index=0;
+                    var sectionDivs = $('#myTabContent').find("div[sid='demoCourseSectionDiv']");
+                    $.each(sectionDivs, function (i, item) {
+                        var record = data.record[index];
+                        var channel = record.shareChannel;
+                        var shareCategory = record.shareCategory;
+                        $(item).find("#classify").find("option[value='"+channel+"']").attr("selected", true);
+
+
+                        $(item).find("#subClassify").find("option[value=shareCategory]").attr("selected",true);
+                        index++;
+                    });
+
+
                     $('#myTabContent').fill(data.record);
                 }
             }
