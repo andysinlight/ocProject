@@ -6,6 +6,7 @@ import com.online.college.common.util.JsonUtil;
 import com.online.college.common.web.JsonView;
 import com.online.college.common.web.SessionContext;
 import com.online.college.core.auth.domain.AuthUser;
+import com.online.college.core.auth.service.IAuthUserService;
 import com.online.college.core.consts.domain.ConstsClassify;
 import com.online.college.core.consts.service.IConstsClassifyService;
 import com.online.college.core.course.domain.Course;
@@ -35,6 +36,9 @@ import java.util.*;
 @Controller
 @RequestMapping("/share")
 public class ShareController {
+
+    @Autowired
+    private IAuthUserService entityService;
 
     @Resource
     private ICourseService courseService;

@@ -8,6 +8,8 @@
     <meta name="description" content="">
     <!-- 引入资源文件 -->
     <#include "../../common/res.html" />
+    <script type="text/javascript" src="${s.base}/res/js/jquery.qrcode.min.js"></script>
+
 </head>
 
 <body class="">
@@ -45,61 +47,59 @@
             <div class="row-fluid">
                 <div class="block span6">
                     <div id="widget2container" class="block-body">
-                        <table class="table list">
+                        <table class="table list" id="table_body">
                             <tbody>
                             <#if (page.items)??>
                                 <#list page.items as item>
                                     <tr id="tr-${item.id!}">
                                         <td style="width:600px;">
                                             <p>
-                                                <a href="${s.base}/share/read.html?id=${item.id!}">
-                                                    <#if (item.picture)?? && item.picture != ''>
-                                                        <img src="${item.picture!}" style="width: 180px;height:100px;float: left;">
-                                                        <#else>
-                                                            <img src="${s.base}/res/i/course.png" style="width: 180px;height:100px;float: left;">
-                                                    </#if></a>
-                                                <div class="ml-15 w-350" style="float:left;">
-                                                    <a href="${s.base}/share/read.html?id=${item.id!}"><p class="ellipsis" title="${item.name!}"><strong>${item.name!}</strong></p></a>
+                                            <div class="qrcode" id="${item.id!}" style="float:left;"></div>
+                                            <div class="ml-15 w-350" style="float:left;">
+                                                <a href="${s.base}/share/read.html?id=${item.id!}"><p class="ellipsis"
+                                                                                                      title="${item.name!}">
+                                                    <strong>${item.name!}</strong></p></a>
                                                 <p class="ellipsis-multi h-40" title="${item.brief!}">${item.brief!}</p>
-                                            <p>${item.updateTime?string('yyyy-MM-dd HH:mm')}</p></div>
+                                                <p>${item.updateTime?string('yyyy-MM-dd HH:mm')}</p></div>
                                             </p>
-                                         </td>
+                                        </td>
 
-                    <td>
-                        <#if (records)??>
-                            <#list records as record>
-                                <#if (record.shareItemId==item.id)>
-                                    <p>
-                                        ${record.shareChannelName!}+${record.shareCategoryName!}+${record.shareOrder!}</p>
-                                </#if>
-                            </#list>
-                        </#if>
-                    </td>
-
-
-                    <td style="width:120px;">
-                        <p>访问次数：${item.studyCount!}</p>
-                        <p><a href="${s.base}/share/product/${item.id!}.html" target="view_window">去看看</a></p>
-                        <p><a href="javascript:void(0)" onclick="doDelete(${item.id!});">删除</a></p>
-                    </td>
+                                        <td>
+                                            <#if (records)??>
+                                                <#list records as record>
+                                                    <#if (record.shareItemId==item.id)>
+                                                        <p>
+                                                            ${record.shareChannelName!}+${record.shareCategoryName!}+${record.shareOrder!}</p>
+                                                    </#if>
+                                                </#list>
+                                            </#if>
+                                        </td>
 
 
-                    </tr>
-                    </#list>
-                    </#if>
-                    </tbody>
-                    </table>
+                                        <td style="width:120px;">
+                                            <p>访问次数：${item.studyCount!}</p>
+                                            <p><a href="${s.base}/share/product/${item.id!}.html" target="view_window">去看看</a>
+                                            </p>
+                                            <p><a href="javascript:void(0)" onclick="doDelete(${item.id!});">删除</a></p>
+                                        </td>
 
-                    <p>
-                        <#include "../../common/tailPage.html"/>
-                    </p>
 
+                                    </tr>
+                                </#list>
+                            </#if>
+                            </tbody>
+                        </table>
+
+                        <p>
+                            <#include "../../common/tailPage.html"/>
+                        </p>
+
+                    </div>
                 </div>
             </div>
-    </div>
-    </form>
+        </form>
 
-</div>
+    </div>
 </div>
 
 <!-- 弹出层 alert 信息 -->
@@ -146,7 +146,21 @@
             }
             _queryPage();//分页
         });
+
+        makeQcCode();
     });
+
+
+    function makeQcCode() {
+        var qrcodes = $('.qrcode');
+        qrcodes.each(function () {
+            var child = $(this);
+            var attr = child.attr("id");
+            child.qrcode({width: 100, height: 100, text: "http://andfly.6655.la:10331/share/product/"+attr+".html"});
+        });
+
+    }
+
 
     //课程上下架
     function update(id, sale) {
